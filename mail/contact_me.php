@@ -9,6 +9,39 @@ if(empty($_POST['name'])  		||
 	echo "No arguments Provided!";
 	return false;
    }
+
+// validate recaptcha
+$recaptchaSecret = env('recaptcha-secret');
+if(is_null($recaptchaSecret)){
+    echo 'Wrong recaptcha secret';
+    return false;
+}
+$recaptchaResponse = $_POST['g-recaptcha-response'];
+if(empty($recaptchaResponse)){
+    echo 'Wrong recaptcha response';
+    return false;
+}
+$clientIp = $_SERVER['REMOTE_ADDR'];
+
+$url = 'https://www.google.com/recaptcha/api/siteverify';
+$data = array('secret' => $recaptchaSecret, 'response' => $recaptchaResponse, 'remoteip' => $clientIp);
+
+$options = array(
+    'http' => array(
+        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+        'method'  => 'POST',
+        'content' => http_build_query($data),
+    ),
+);
+$context  = stream_context_create($options);
+$result = file_get_contents($url, false, $context);
+if ($result === FALSE) {
+    echo 'Problem contacting '.$url;
+    return false;
+}
+
+var_dump($result);
+die();
 	
 $name = $_POST['name'];
 $email_address = $_POST['email'];
