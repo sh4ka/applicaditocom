@@ -39,9 +39,6 @@ if ($result === FALSE) {
     echo 'Problem contacting '.$url;
     return false;
 }
-
-var_dump($result);
-die();
 	
 $name = $_POST['name'];
 $email_address = $_POST['email'];
